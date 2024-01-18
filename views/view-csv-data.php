@@ -21,11 +21,11 @@ if ($id === '') {
         $performanceCode = $row['performance_code'];
         $csvFile = $row['csv_file']; 
 
-        //for sending the eventname to view-varcode.php
-        $tableNameEvent = strtolower(str_replace(' ', '', $eventName)).uniqid();
+        //for sending the eventname to view-barcode.php
+        $tableNameEvent = strtolower(str_replace(' ', '', $eventName));
 
         //actual path where the csv file is located below
-        $csvFilePath = "../". $csvFile;
+        $csvFilePath = $csvFile;
         if (file_exists($csvFilePath)) {
             $csvData = file_get_contents($csvFilePath);
             // Continue with parsing and processing
@@ -124,8 +124,8 @@ if ($id === '') {
 
         const uploadDataButton = document.getElementById('uploadBarcode');
         const generateBarcodeButton = document.getElementById('generateBarcode');
-        let customerData;
-        let barcodeDetails; // Declare a variable to store barcode details
+        const id = <?php echo json_encode($id); ?>;
+        const performanceCode = "<?php echo $performanceCode; ?>";
 
         generateBarcodeButton.addEventListener('click', async function () {
 
@@ -134,7 +134,11 @@ if ($id === '') {
 
             for (let i = 0; i < valueRows.length; i++) {
                 const rowData = valueRows[i].querySelectorAll('.cols');
-                customerData = {
+                const basketData = {
+                    "area": rowData[8].innerText,
+                    "pricetypecode": rowData[9].innerText
+                };
+                const customerData = {
                     "salutation": rowData[1].innerText,
                     "firstname": rowData[2].innerText,
                     "lastname": rowData[3].innerText,
@@ -145,13 +149,14 @@ if ($id === '') {
                 };
 
                 // Make an asynchronous request to generate the barcode
-                const response = await fetch('generate-barcode.php?id=' + <?php echo json_encode($id); ?>, {
+                const response = await fetch(`generate-barcode.php?id=id`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ customerData }),
+                    body: JSON.stringify({ performance_code: performanceCode, basketData, customerData }),
                 });
+
 
                 if (response.ok) {
                     barcodeDetails = await response.json();
@@ -184,7 +189,10 @@ if ($id === '') {
             // Extract data from the dynamically created table
             const dynamicTable = document.getElementById('dynamicTable');
             const rows = dynamicTable.getElementsByTagName('tr');
-            //const tableData = [];
+            const id = <?php echo json_encode($id); ?>;
+            const eventName = <?php echo json_encode($eventName); ?>;
+
+            const tableData = [];
 
             for (let i = 1; i < rows.length; i++) { // Start from 1 to skip header row
                 const cols = rows[i].getElementsByTagName('td');
@@ -196,7 +204,7 @@ if ($id === '') {
 
                 tableData.push(rowData);
             }
-            // console.log(tableData);
+            console.log(tableData);
 
             // Make an asynchronous request to upload-barcode.php with tableData
             const uploadResponse = await fetch('upload-barcode.php', {
@@ -204,18 +212,21 @@ if ($id === '') {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify({ id: <?php echo json_encode($id); ?>, tableData, eventName: <?php echo json_encode(trim($eventName)); ?> }),
+                body: JSON.stringify({ id: id, tableData, eventName: eventName }),
             });
 
             if (uploadResponse.ok) {
                 uploadedDetails = await uploadResponse.json();
+                const tableName = uploadedDetails.tableName;
+                console.log('Table Name:', tableName);
                 //console.log(uploadedDetails);
                 // Redirect or handle success as needed
                 alert('Data Uploaded successfully');
                 console.log('Data uploaded successfully');
                 setTimeout(function () {
-                    window.location.href = 'view-barcodes.php?eventName=' + <?php echo $tableNameEvent; ?> + '&id=' + <?php echo $id; ?>;
-                }, 5000); // 1000 milliseconds (1 second) delay
+                    window.location.href = 'view-barcodes.php?eventName='+tableName+'&id=<?php echo $id; ?>';
+                }, 4000);
+
 
 
             } else {
@@ -249,7 +260,7 @@ if ($id === '') {
 
             const a = document.createElement('a');
             a.href = url;
-            a.download = 'table_data.csv';
+            a.download = "<?php echo $eventName; ?>" + "_table_data.csv";
             document.body.appendChild(a);
             a.click();
             document.body.removeChild(a);

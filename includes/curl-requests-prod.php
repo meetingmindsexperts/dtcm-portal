@@ -4,7 +4,7 @@ $sellerCode = 'AMMEE1';
 $apiKey ='sz4pbntphrygvseq2dr98vh8';
 $client_secret =  "57gZ_cbatt9P2hcUmZC9vQCi9vtBUCf0enK8Z_8Z";
 $apiUrl = "https://et-api.det.gov.ae/adfs/oauth2/token?api_key=sz4pbntphrygvseq2dr98vh8";
-
+$performance_code = "PDUB01DEC2023B";
 
 function makeApiRequest($url, $method, $accessToken, $data = null) {
     $curl = curl_init();
@@ -66,19 +66,21 @@ function getAccessToken() {
     }
 }
 
-function createBasket($accessToken) {
+$pricetypecode = "A";
+$area = "SVIP1";
+function createBasket($accessToken, $performance_code, $area, $pricetypecode) {
     $url = 'https://et-api.det.gov.ae/baskets?api_key=sz4pbntphrygvseq2dr98vh8';
 
     $data = [
         "Channel" => "API",
         "Seller" => "AMMEE1",
-        "Performancecode" => "PDUB01DEC2023B",
-        "Area" => "SVIP1",
+        "Performancecode" => $performance_code,
+        "Area" =>  $area,
         "autoReduce" => false,
         "holdcode" => "",
         "Demand" => [
             [
-                "PriceTypeCode" => "A",
+                "PriceTypeCode" => $pricetypecode,
                 "Quantity" => 1,
                 "Admits" => 1,
                 "offerCode" => "",
@@ -146,7 +148,7 @@ function purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, 
         ],
         "Payments" => [
             [
-                "Amount" => "50000",  //update this based on the basket id
+                "Amount" => "0",  //update this based on the basket id
                 "MeansOfPayment" => "EXTERNAL",
             ],
         ],
@@ -175,7 +177,7 @@ function getOrderDetails($accessToken, $orderId) {
 // $accessToken = getAccessToken();
 // echo "Access Token: " . $accessToken . "\n";
 
-// $basketId = createBasket($accessToken);
+// $basketId = createBasket($accessToken, $area, $pricetypecode);
 // echo "Basket ID: " . $basketId . "\n";
 
 // $customerDetails = createCustomer($accessToken, $customerData);

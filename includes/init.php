@@ -1,27 +1,19 @@
-
 <?php
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
-
 session_start();
-// Get the current server protocol (http or https)
-$protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 
-// Get the server name (localhost in AMPPS)
-$servername = $_SERVER['SERVER_NAME'];
+// Define a function to get the base URL
+function getBaseUrl() {
+    $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
+    $servername = $_SERVER['SERVER_NAME'];
+    $port = $_SERVER['SERVER_PORT'];
+    $basedir = '/dtcm-new'; // Change this if your project is in a subdirectory
 
-// Get the server port
-$port = $_SERVER['SERVER_PORT'];
+    $port = ($port === '80' || $port === '443') ? '' : (':' . $port);
 
-// Check if the port is a standard HTTP/HTTPS port
-$port = ($port === '80' || $port === '443') ? '' : (':' . $port);
+    return "{$protocol}://{$servername}{$port}{$basedir}";
+}
 
-// Get the base directory (if your project is not in the root directory)
-$basedir = '/dtcm-new'; // Change this if your project is in a subdirectory
-
-// Combine all components to form the base URL
-$baseUrl = "{$protocol}://{$servername}{$port}{$basedir}";
-
-// Use $baseUrl in your HTML link
+// Set the base URL
+$baseUrl = getBaseUrl();
 
 ?>

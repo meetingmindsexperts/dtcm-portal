@@ -72,8 +72,12 @@ if ($eventName !== '') {
 
 ?>
 <script>
-    const exportCsv = document.getElementById(exportCsv);
-    exportCsv.addEventListener('click', () => {
+document.addEventListener('DOMContentLoaded', function () {
+    // Declare exportCsv before using it in event listeners
+    const exportCsv = document.getElementById('exportCsv');
+    
+    setTimeout(function() {
+        exportCsv.addEventListener('click', () => {
             const table = document.getElementById('dynamicTable');
             const rows = table.querySelectorAll('tbody tr');
             const csvContent = [];
@@ -102,8 +106,10 @@ if ($eventName !== '') {
             a.click();
             document.body.removeChild(a);
         });
+    }, 2000); // Set the timeout interval as needed
+});
 
-        </script>
+</script>
 <?
 include_once '../includes/footer.php';
 ?>

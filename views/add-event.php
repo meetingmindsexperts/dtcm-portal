@@ -1,5 +1,6 @@
 <?php
 // Include necessary files
+// include_once '../includes/auth.php';
 
 include_once '../includes/functions.php';
 include_once '../includes/header.php';

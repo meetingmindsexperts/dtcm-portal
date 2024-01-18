@@ -1,10 +1,59 @@
 <?php
 // Include necessary files
+// include_once '../includes/auth.php';
+include_once '../includes/db.php';
 include_once '../includes/functions.php';
 include_once '../includes/header.php';
 
 // Get all events from the database
 $events = getEvents();
+
+// Initialize an error array
+$errors = $_SESSION['errors'] =[];
+$successMessage = '';
+
+// Validate form data
+$eventName = isset($_POST['eventName']) ? mysqli_real_escape_string($conn, trim($_POST['eventName'])) : '';
+$performanceCode = isset($_POST['performanceCode']) ? mysqli_real_escape_string($conn, trim($_POST['performanceCode'])) : '';
+
+// Validate file upload
+if (isset($_FILES['csvFile']) && $_FILES['csvFile']['error'] === UPLOAD_ERR_OK) {
+    $csvFileName = $_FILES['csvFile']['name'];
+    $csvTmpName = $_FILES['csvFile']['tmp_name'];
+
+    // Move uploaded file to a designated folder with a unique filename
+    $uploadDirectory = '../csv-uploads/';
+    $uploadedFilePath = $uploadDirectory . $eventName . '_' . date('Y-m-d') . '_' . uniqid() . '.csv';
+
+    if (move_uploaded_file($csvTmpName, $uploadedFilePath)) {
+        // Escape user input for SQL query
+        $eventName = mysqli_real_escape_string($conn, $eventName);
+        $performanceCode = mysqli_real_escape_string($conn, $performanceCode);
+
+        // Insert data into the database
+        $sql = "INSERT INTO events_csv (event_name, performance_code, csv_file, date_added, date_modified) VALUES ('$eventName', '$performanceCode', '$uploadedFilePath', NOW(), NOW())";
+        
+        if ($conn->query($sql) === TRUE) {
+            $successMessage = "Data inserted successfully!";
+        } else {
+            $errors[] = "Database error: " . $conn->error;
+        }
+    } else {
+        // Print more information about the file upload failure
+        $errors[] = "File upload failed. Error code: " . $_FILES['csvFile']['error'];
+        $errors[] = "Uploaded file name: " . $csvFileName;
+        $errors[] = "Uploaded file temporary name: " . $csvTmpName;
+        $errors[] = "Destination file path: " . $uploadedFilePath;
+        $errors[] = "Upload directory: " . $uploadDirectory;
+    }
+} else {
+    // Handle file upload errors
+    $errors[] = "File upload failed with error code: " . $_FILES['csvFile']['error'];
+}
+
+// Save errors in the session
+$_SESSION['errors'] = $errors;
+$_SESSION['successMessage'] = $successMessage;
 ?>
 
 <div class="container px-lg-5 mt-5">
@@ -91,6 +140,8 @@ $events = getEvents();
                 } else {
                     echo "<tr><td colspan='7'>No rows in events_csv table.</td></tr>";
                 }
+                // Close the database connection
+                $conn->close();
                 ?>
                 </td>
             </tbody>

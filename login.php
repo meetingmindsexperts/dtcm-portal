@@ -1,9 +1,9 @@
 <?php
-// Include necessary files
-include_once 'includes/header.php';
 
 // Include the database connection file
 include_once 'includes/db.php';
+// Include necessary files
+include_once 'includes/header.php';
 
 // Function to sanitize input
 function sanitizeInput($input)
@@ -11,12 +11,12 @@ function sanitizeInput($input)
     return htmlspecialchars(trim($input));
 }
 
-// Function to redirect to another page
-function redirectTo($page)
-{
-    header("Location: $page");
-    exit();
-}
+// // Function to redirect to another page
+// function redirectTo($page)
+// {
+//     header("Location: $page");
+//     exit();
+// }
 
 // Function to display login form with errors
 function displayLoginForm($error = '')

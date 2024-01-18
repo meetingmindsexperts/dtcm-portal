@@ -1,0 +1,23 @@
+
+name: Deploy to FTP DTCM-csv.
+on:
+  push:
+    branches:
+      - main  # Change this to your main branch
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: 🚚 Get latest code
+      uses: actions/checkout@v3
+
+    - name: 📂 Sync files
+      uses: SamKirkland/FTP-Deploy-Action@v4.3.4
+      with:
+        server: ftp.meetingminds-experts.com
+        username: krishna@dtcm-csv.meetingminds-experts.com
+        password: YBRS49VgXd;7
+        remote-dir: 'public_html/dtcm-csv.meetingminds-experts.com/'
+        log-level: standard

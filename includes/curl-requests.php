@@ -62,19 +62,22 @@ function getAccessToken() {
     }
 }
 
-function createBasket($accessToken) {
+$performance_code = "PDUB01DEC2023B";
+$pricetypecode = "A";
+$area = "SVIP1";
+function createBasket($accessToken, $performance_code, $area, $pricetypecode) {
     $url = 'https://et-apiuat.detsandbox.com/baskets?api_key=3rcbhsn32xmwvu42bmk2pkak';
 
     $data = [
         "Channel" => "API",
         "Seller" => "AMMEE1",
-        "Performancecode" => "PDUB01DEC2023B",
-        "Area" => "SVIP1",
+        "Performancecode" => $performance_code,
+        "Area" =>  $area,
         "autoReduce" => false,
         "holdcode" => "",
         "Demand" => [
             [
-                "PriceTypeCode" => "A",
+                "PriceTypeCode" => $pricetypecode,
                 "Quantity" => 1,
                 "Admits" => 1,
                 "offerCode" => "",
@@ -171,7 +174,7 @@ function getOrderDetails($accessToken, $orderId) {
 // $accessToken = getAccessToken();
 // echo "Access Token: " . $accessToken . "\n";
 
-// $basketId = createBasket($accessToken);
+// $basketId = createBasket($accessToken, $area, $pricetypecode);
 // echo "Basket ID: " . $basketId . "\n";
 
 // $customerDetails = createCustomer($accessToken, $customerData);

@@ -56,7 +56,7 @@ try {
 
 // Output messages and errors as JSON response
 if (!empty($messages)) {
-    echo json_encode(['status' => 'success', 'messages' => $messages]);
+    echo json_encode(['status' => 'success', 'messages' => $messages, 'tableName' => $newTableName]);
     unset($_SESSION['messages']);
 } else if (!empty($errors)) {
     echo json_encode(['status' => 'error', 'errors' => $errors]);
