@@ -26,7 +26,7 @@ if ($id === '') {
         $csvRows = explode("\n", $csvData);
 
         // Create a new table to store CSV data
-        $newTableName = strtolower(str_replace(' ', '', $eventName)).uniqid();
+        $newTableName = strtolower(str_replace(' ', '', $eventName)).date('ymd').uniqid();
 
         $createTableSql = "CREATE TABLE IF NOT EXISTS $newTableName (
                                 id INT AUTO_INCREMENT PRIMARY KEY,
