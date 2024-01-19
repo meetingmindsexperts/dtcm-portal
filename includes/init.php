@@ -6,7 +6,13 @@ function getBaseUrl() {
     $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
     $servername = $_SERVER['SERVER_NAME'];
     $port = $_SERVER['SERVER_PORT'];
-    $basedir = '/dtcm-new'; // Change this if your project is in a subdirectory
+
+    if ($servername === 'localhost') {
+        $basedir = '/dtcm-new'; // Change this if your project is in a subdirectory
+
+    } else {
+        $basedir = ''; // Change this if your project is in a subdirectory
+    }   
 
     $port = ($port === '80' || $port === '443') ? '' : (':' . $port);
 
