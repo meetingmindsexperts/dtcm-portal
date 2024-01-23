@@ -78,7 +78,7 @@ $_SESSION['successMessage'] = $successMessage;
 
     ?>
     <h1 class="mb-5">CSV Upload</h1>
-    <form class="w-75" action="../csv-process.php" method="post" enctype="multipart/form-data">
+    <form class="w-75" action="" method="post" enctype="multipart/form-data">
         <div class="mb-3">
             <label for="eventName" class="form-label">Event Name:</label>
             <input type="text" name="eventName" id="eventName" class="form-control" required>
