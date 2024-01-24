@@ -66,8 +66,9 @@ function getAccessToken() {
     }
 }
 
+$performance_code = "PDUB01DEC2023B";
 $pricetypecode = "A";
-$area = "SVIP1";
+$area = "SDELEGATE";
 function createBasket($accessToken, $performance_code, $area, $pricetypecode) {
     $url = 'https://et-api.det.gov.ae/baskets?api_key=sz4pbntphrygvseq2dr98vh8';
 
@@ -106,12 +107,12 @@ function createBasket($accessToken, $performance_code, $area, $pricetypecode) {
 }
 
 $customerData = [
-        "firstname" => "Krishna",
-        "lastname" => "Test ",
-        "nationality" => "IN",
-        "email" => "krishna@test.com",
-        "phoneNumber" => "8908978667",
-        "countryCode" => "AE",
+    "firstname" => "Krishna",
+    "lastname" => "Test ",
+    "nationality" => "IN",
+    "email" => "krishna@test.com",
+    "phoneNumber" => "8908978667",
+    "countryCode" => "AE",
 ];
 function createCustomer($accessToken, $customerData) {
     $url = 'https://et-api.det.gov.ae/customers?api_key=sz4pbntphrygvseq2dr98vh8';
@@ -135,6 +136,10 @@ function createCustomer($accessToken, $customerData) {
         'aFile' => $response['aFile'],
     ];
 }
+// Extracting relevant details from $customerDetails
+$customerId = $customerDetails['customerId'];
+$customerAccount = $customerDetails['account'];
+$aFile = $customerDetails['aFile'];
 
 function purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile) {
     $url = 'https://et-api.det.gov.ae/baskets/' . $basketId . '/purchase?api_key=sz4pbntphrygvseq2dr98vh8';
@@ -173,6 +178,39 @@ function getOrderDetails($accessToken, $orderId) {
 
     return makeApiRequest($url, 'GET', $accessToken);
 }
+
+// Collect all errors in this array
+$errors = [];
+
+$accessToken = getAccessToken();
+if (!$accessToken) {
+    $errors[] = "Failed to retrieve access token.";
+}
+
+$basketId = createBasket($accessToken, $performance_code, $area, $pricetypecode);
+if (!$basketId) {
+    $errors[] = "Failed to create   .";
+}
+
+$customerDetails = createCustomer($accessToken, $customerData);
+if (!$customerDetails) {
+    $errors[] = "Failed to create customer.";
+} 
+// Extracting relevant details from $customerDetails
+$customerId = $customerDetails['customerId'];
+$customerAccount = $customerDetails['account'];
+$aFile = $customerDetails['aFile'];
+
+$orderId = purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile);
+if (!$orderId) {
+    $errors[] = "Failed to purchase basket.";
+} else {
+    $barcodeDetails = getOrderDetails($accessToken, $orderId);
+    if (!$barcodeDetails) {
+        $errors[] = "Failed to retrieve order details.";
+    }
+}
+
 
 // $accessToken = getAccessToken();
 // echo "Access Token: " . $accessToken . "\n";

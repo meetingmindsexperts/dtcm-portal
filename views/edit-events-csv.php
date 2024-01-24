@@ -46,7 +46,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         if (move_uploaded_file($newCsvTmpName, $newUploadedFilePath)) {
             // Update the data in the database with the new CSV file
-            $sql = "UPDATE events_csv SET event_name = '$eventName', performance_code = '$performanceCode', csv_file = '$newUploadedFilePath', date_modified = NOW() WHERE id = $id";
+            $sql = "UPDATE events_csv SET event_name = '$eventName', performance_code = '$performanceCode', csv_file = '$newUploadedFilePath', event_table_name = '', date_modified = NOW() WHERE id = $id";
 
             if ($conn->query($sql) === TRUE) {
                 $_SESSION['successMessage'] = "Data updated successfully!";

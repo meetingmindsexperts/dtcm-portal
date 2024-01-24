@@ -76,7 +76,7 @@ if ($id === '') {
             </div>
         </div>";
 
-
+    echo "<div class='errors' id='errorMessage'></div>";
     echo "<table class='py-5 table table-striped d-block overflow-scroll' id='dynamicTable'>";
     echo "<thead><tr class='header-rows'><th>#</th>";
 
@@ -114,6 +114,8 @@ if ($id === '') {
     }
 
     echo "</tbody></table></div>";
+
+
 }
 
 ?>
@@ -171,6 +173,16 @@ if ($id === '') {
                     // Display the "Upload Data" button
                     uploadDataButton.classList.remove('d-none');
                     exportCsv.classList.remove('d-none');
+                    // Check if there are any errors in the response
+                    if (barcodeDetails.errors) {
+                        // Handle and display errors on the page
+                        console.error('Error:', barcodeDetails.errors);
+                        // Update the UI to show the errors to the user
+                        document.getElementById('errorMessage').innerText = barcodeDetails.errors.join('\n');
+                    } else {
+                        // Process the successful response and update UI as needed
+                        console.log('Success:', barcodeDetails);
+                    }
 
                 } else {
                     // Hide the "Upload Data" button in case of an error
@@ -227,8 +239,15 @@ if ($id === '') {
                     window.location.href = 'view-barcodes.php?eventName='+tableName+'&id=<?php echo $id; ?>';
                 }, 4000);
 
-
-
+                if (uploadedDetails.errors) {
+                    // Handle and display errors on the page
+                    console.error('Error:', uploadedDetails.errors);
+                    // Update the UI to show the errors to the user
+                    document.getElementById('errorMessage').innerText = uploadedDetails.errors.join('\n');
+                } else {
+                    // Process the successful response and update UI as needed
+                    console.log('Success:', uploadedDetails);
+                }
             } else {
                 console.error('Error uploading data:', uploadResponse.status, uploadResponse.statusText);
                 const uploadErrorText = await uploadResponse.text();

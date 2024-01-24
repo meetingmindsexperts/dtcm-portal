@@ -11,6 +11,8 @@ $messages = $_SESSION['messages'] = [];
 // Retrieve POST data
 $data = json_decode(file_get_contents("php://input"), true);
 
+// var_dump($data);
+
 // Process the data as needed
 $id = isset($data['id']) ? (int)$data['id'] : 0;
 $tableData = isset($data['tableData']) ? json_encode($data['tableData']) : '';
@@ -27,22 +29,31 @@ try {
             table_data TEXT,
             date_added DATETIME
         );";
-
+    
         //echo $tableCreationQuery;  // Add this line for debugging
-
+    
         if ($conn->query($tableCreationQuery) === TRUE) {
             $messages[] = "Table created or already exists.";
+    
+            // Example: Insert data into a table
+            $sql = "INSERT INTO events_csv (event_table_name) VALUES ('$newTableName');";
+            if ($conn->query($sql) === TRUE) {
+                $messages[] = "event_table_name inserted into events_csv successfully!";
+            } else {
+                $errors[] = "Database error: " . $conn->error;
+            }
+            $insertTableQuery = "INSERT INTO $newTableName (id, table_data, date_added) VALUES ($id, '$tableData', NOW());";
+            
+           
+            //echo $insertTableQuery;  // Add this line for debugging
+    
+            if ($conn->query($insertTableQuery) === TRUE) {
+                $messages[] = "Data updated successfully!";
+            } else {
+                $errors[] = "Database error: " . $conn->error;
+            }
         } else {
             $errors[] = "Table creation error: " . $conn->error;
-        }
-        // Example: Insert data into a table
-        $sql = "INSERT INTO $newTableName (id, table_data, date_added) VALUES ($id, '$tableData', NOW());";
-        //echo $sql;  // Add this line for debugging
-
-        if ($conn->query($sql) === TRUE) {
-            $messages[] = "Data updated successfully!";
-        } else {
-            $errors[] = "Database error: " . $conn->error;
         }
     } else {
         $errors[] = "Invalid or missing data.";

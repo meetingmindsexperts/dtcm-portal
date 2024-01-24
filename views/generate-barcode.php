@@ -19,57 +19,63 @@ if ($id === '') {
     
     // Check if the required data is present
     if (!isset($data->customerData)) {
-        echo json_encode(['error' => 'Invalid Customer data']);
-        exit;
+        $errors[] = 'Invalid Customer data';
     }
     if (!isset($data->basketData)) {
-        echo json_encode(['error' => 'Invalid Basket data']);
-        exit;
+        $errors[] = 'Invalid Basket data';
     }
     if (!isset($data->performance_code)) {
-        echo json_encode(['error' => 'Invalid Performance code']);
-        exit;
+        $errors[] = 'Invalid Performance code';
     }
-    // Retrieve the basket data from the request
-    $basketData = $data->basketData;
-    // Retrieve the specifics of basket data from the request
-    $area = $basketData->area; 
-    $pricetypecode = $basketData->pricetypecode;
 
-    //get performance code 
-    $performance_code = $data->performance_code;
+    if (empty($errors)) {
+        // Retrieve the basket data from the request
+        $basketData = $data->basketData;
+        // Retrieve the specifics of basket data from the request
+        $area = $basketData->area; 
+        $pricetypecode = $basketData->pricetypecode;
 
+        //get performance code 
+        $performance_code = $data->performance_code;
 
-    // Retrieve the customer data from the request
-    $customerData = $data->customerData;
+        // Obtain or pass the access token to the function
+        $accessToken = getAccessToken(); // You may need to adjust this based on your logic
 
-    // Obtain or pass the access token to the function
-    $accessToken = getAccessToken(); // You may need to adjust this based on your logic
+        // Create Basket for the record
+        $basketId = createBasket($accessToken, $performance_code, $area, $pricetypecode);
 
-    // Create Basket for the record
-    $basketId = createBasket($accessToken, $performance_code, $area, $pricetypecode);
+        // Create Customer for the record
+        $customerDetails = createCustomer($accessToken, $customerData);
 
-    // Create Customer for the record
-    $customerDetails = createCustomer($accessToken, $customerData);
-    $customerId = $customerDetails['customerId'];
-    $customerAccount = $customerDetails['account'];
-    $aFile = $customerDetails['aFile'];
+        if (isset($customerDetails['error'])) {
+            $errors[] = $customerDetails['error'];
+        } else {
+            $customerId = $customerDetails['customerId'];
+            $customerAccount = $customerDetails['account'];
+            $aFile = $customerDetails['aFile'];
 
-    // Purchase Basket for the record
-    $orderId = purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile);
+            // Purchase Basket for the record
+            $orderId = purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile);
 
-    // Get Order Details for the record
-    $barcodeDetails = getOrderDetails($accessToken, $orderId);
-    $barcode = $barcodeDetails['orderLines'][0]['orderLineItems'][0]['barcode'];
+            // Get Order Details for the record
+            $barcodeDetails = getOrderDetails($accessToken, $orderId);
+            $barcode = $barcodeDetails['orderLines'][0]['orderLineItems'][0]['barcode'];
 
-    // Output the details as JSON
-    echo json_encode([
-        'basketId' => $basketId,
-        'customerId' => $customerId,
-        'account' => $customerAccount,
-        'aFile' => $aFile,
-        'orderId' => $orderId,
-        'barcode' => $barcode,
-    ]);
+            // Output the details as JSON
+            echo json_encode([
+                'basketId' => $basketId,
+                'customerId' => $customerId,
+                'account' => $customerAccount,
+                'aFile' => $aFile,
+                'orderId' => $orderId,
+                'barcode' => $barcode,
+            ]);
+        }
+    }
+}
+
+// Output errors as JSON
+if (!empty($errors)) {
+    echo json_encode(['errors' => $errors]);
 }
 ?>
