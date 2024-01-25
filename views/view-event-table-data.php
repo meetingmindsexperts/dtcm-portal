@@ -38,7 +38,7 @@ if ($eventName !== '') {
                       </div>";
 
                 // Generate HTML table
-                echo '<div class="py-5 my-4"';
+                echo '<div class="py-5 my-4">';
                 echo '<table id="dynamicTable" class="table table-striped d-block overflow-scroll">';
                 echo '<thead>';
                 echo '<tr>';
