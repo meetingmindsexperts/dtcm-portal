@@ -14,9 +14,10 @@ $data = json_decode(file_get_contents("php://input"), true);
 // var_dump($data);
 
 // Process the data as needed
-$id = isset($data['id']) ? (int)$data['id'] : 0;
+$id = (isset($data['id']) || isset($_GET['id'])) ? $data['id'] : $_GET['id'];
 $tableData = isset($data['tableData']) ? json_encode($data['tableData']) : '';
 $eventName = $data['eventName'];
+$tableName = strtolower(str_replace(' ', '', $eventName));
 $newTableName = strtolower(str_replace(' ', '', $eventName)).uniqid();
 
 // Perform database operations
@@ -36,11 +37,12 @@ try {
             $messages[] = "Table created or already exists.";
     
             // Example: Insert data into a table
-            $sql = "INSERT INTO events_csv (event_table_name) VALUES ('$newTableName');";
-            if ($conn->query($sql) === TRUE) {
-                $messages[] = "event_table_name inserted into events_csv successfully!";
+            $updateSql = "UPDATE events_csv SET event_table_name = '$tableName', event_table_data = '$tableData' WHERE id = $id";
+
+            if ($conn->query($updateSql) === TRUE) {
+                $messages[] = "Events_csv table updated successfully with: " . $event_table_name;
             } else {
-                $errors[] = "Database error: " . $conn->error;
+                $errors[] = "Error updating table name in the Events_csv table: " . $conn->error;
             }
             $insertTableQuery = "INSERT INTO $newTableName (id, table_data, date_added) VALUES ($id, '$tableData', NOW());";
             
@@ -60,7 +62,8 @@ try {
     }
 } catch (Exception $e) {
     $errors[] = "Error message: " . $e->getMessage();
-} finally {
+} 
+finally {
     // Close the database connection
     $conn->close();
 }

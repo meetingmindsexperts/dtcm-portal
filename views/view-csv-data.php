@@ -231,7 +231,7 @@ if ($id === '') {
             console.log(tableData);
 
             // Make an asynchronous request to upload-barcode.php with tableData
-            const uploadResponse = await fetch('upload-barcode.php', {
+            const uploadResponse = await fetch('upload-barcode.php?id=id`', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
