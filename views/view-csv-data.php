@@ -185,6 +185,16 @@ if ($id === '') {
                         // Process the successful response and update UI as needed
                         console.log('Success:', barcodeDetails);
                     }
+                    // Check if there are any errors in the response
+                    if (barcodeDetails.messages) {
+                        // Handle and display errors on the page
+                        console.error('Error:', barcodeDetails.messages);
+                        // Update the UI to show the errors to the user
+                        document.getElementById('errorMessage').innerText = barcodeDetails.messages.join('\n');
+                    } else {
+                        // Process the successful response and update UI as needed
+                        console.log('Success:', barcodeDetails);
+                    }
 
                 } else {
                     // Hide the "Upload Data" button in case of an error

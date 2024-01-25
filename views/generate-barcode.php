@@ -2,7 +2,10 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include_once '../includes/db.php';
-include_once '../includes/curl-requests.php'; // Include the curl-requests.php file//
+// Include the curl-requests.php file//
+// include_once '../includes/curl-requests.php'; 
+include_once '../includes/curl-requests-prod.php';
+
 
 // Initialize an array to store messages and errors
 $messages = [];
@@ -91,13 +94,22 @@ if ($id === '') {
                 )";
 
                 if ($conn->query($tableCreationQuery) === TRUE) {
-                    $messages[] = "Table created.";
+                    $messages[] = "New Table created.";
+
+                    // Insert data into your tracking table (events_csv)
+                    $insertSql1 = "INSERT INTO events_csv (event_table_name) VALUES ('$event_table_name')";
+
+                    if ($conn->query($insertSql1) === TRUE) {
+                        $messages[] = "Events_csv table updated successfully with: " . $event_table_name;
+                    } else {
+                        $errors[] = "Error inserting table name into the Events_csv table: " . $conn->error;
+                    }
 
                     // Insert data into your table
-                    $insertSql = "INSERT INTO $event_table_name (eventsairid, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
+                    $insertSql2 = "INSERT INTO $event_table_name (eventsairid, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
                         VALUES ('$eventsairid', '$first_name', '$last_name', '$email','$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";
 
-                    if ($conn->query($insertSql) === TRUE) {
+                    if ($conn->query($insertSql2) === TRUE) {
                         $messages[] = "Data inserted into the table successfully.";
                     } else {
                         $errors[] = "Error inserting data into the table: " . $conn->error;
@@ -134,5 +146,7 @@ if ($id === '') {
 // Output errors as JSON
 if (!empty($errors)) {
     echo json_encode(['errors' => $errors]);
+    echo json_encode(['messages' => $messages]);
+
 }
 ?>

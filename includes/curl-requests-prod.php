@@ -66,8 +66,8 @@ function getAccessToken() {
 }
 
 $performance_code = "PVEN26JAN2024T";
-$pricetypecode = "A";
-$area = "SDELEGATECOMP";
+$pricetypecode = "B";
+$area = "SFACULTY";
 function createBasket($accessToken, $performance_code, $area, $pricetypecode) {
     $url = 'https://et-api.det.gov.ae/baskets?api_key=sz4pbntphrygvseq2dr98vh8';
 
@@ -184,7 +184,7 @@ if (!$accessToken) {
 
 $basketId = createBasket($accessToken, $performance_code, $area, $pricetypecode);
 if (!$basketId) {
-    $errors[] = "Failed to create   .";
+    $errors[] = "Failed to create  BAKSETID .";
 }
 
 $customerDetails = createCustomer($accessToken, $customerData);

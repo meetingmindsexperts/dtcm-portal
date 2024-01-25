@@ -12,7 +12,7 @@ if ($_SERVER['SERVER_NAME'] === 'localhost' || $_SERVER['SERVER_ADDR'] === '127.
     // Actual server configuration
     $servername = "162.214.96.162";
     $username = "meeting_dtcm_csv";
-    $password = "RzUoi0nGwWKz";
+    $password = "1RFjhqRTW-A@";
     $dbname = "meeting_dtcm_csv";
 }
 
