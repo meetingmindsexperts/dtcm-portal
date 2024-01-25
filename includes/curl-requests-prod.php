@@ -4,7 +4,6 @@ $sellerCode = 'AMMEE1';
 $apiKey ='sz4pbntphrygvseq2dr98vh8';
 $client_secret =  "57gZ_cbatt9P2hcUmZC9vQCi9vtBUCf0enK8Z_8Z";
 $apiUrl = "https://et-api.det.gov.ae/adfs/oauth2/token?api_key=sz4pbntphrygvseq2dr98vh8";
-$performance_code = "PDUB01DEC2023B";
 
 function makeApiRequest($url, $method, $accessToken, $data = null) {
     $curl = curl_init();
@@ -66,9 +65,9 @@ function getAccessToken() {
     }
 }
 
-$performance_code = "PDUB01DEC2023B";
+$performance_code = "PVEN26JAN2024T";
 $pricetypecode = "A";
-$area = "SDELEGATE";
+$area = "SDELEGATECOMP";
 function createBasket($accessToken, $performance_code, $area, $pricetypecode) {
     $url = 'https://et-api.det.gov.ae/baskets?api_key=sz4pbntphrygvseq2dr98vh8';
 
@@ -136,10 +135,6 @@ function createCustomer($accessToken, $customerData) {
         'aFile' => $response['aFile'],
     ];
 }
-// Extracting relevant details from $customerDetails
-$customerId = $customerDetails['customerId'];
-$customerAccount = $customerDetails['account'];
-$aFile = $customerDetails['aFile'];
 
 function purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile) {
     $url = 'https://et-api.det.gov.ae/baskets/' . $basketId . '/purchase?api_key=sz4pbntphrygvseq2dr98vh8';

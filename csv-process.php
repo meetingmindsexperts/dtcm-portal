@@ -28,7 +28,7 @@ if (isset($_FILES['csvFile']) && $_FILES['csvFile']['error'] === UPLOAD_ERR_OK) 
         $performanceCode = mysqli_real_escape_string($conn, $performanceCode);
 
         // Insert data into the database
-        $sql = "INSERT INTO events_csv (event_name, performance_code, csv_file, date_added, date_modified) VALUES ('$eventName', '$performanceCode', '$uploadedFilePath', NOW(), NOW())";
+        $sql = "INSERT INTO events_csv (event_name, performance_code, csv_file, event_table_name, date_added, date_modified) VALUES ('$eventName', '$performanceCode', '$uploadedFilePath', '', NOW(), NOW())";
         
         if ($conn->query($sql) === TRUE) {
             $successMessage = "Data inserted successfully!";

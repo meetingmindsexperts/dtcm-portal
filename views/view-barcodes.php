@@ -81,7 +81,17 @@ if ($eventName !== '') {
 ?>
 
 <script>
+window.onbeforeunload = function() { return "Your work will be lost."; };
+
+document.addEventListener('DOMContentLoaded', function() {
+    // Your script here
+    window.onbeforeunload = function() {
+        return "Your work will be lost.";
+    };
+});
+
 document.addEventListener('DOMContentLoaded', function () {
+
     // Declare exportCsv before using it in event listeners
     const exportCsv = document.getElementById('exportCsv');
 

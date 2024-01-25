@@ -128,10 +128,11 @@ if ($id === '') {
         const generateBarcodeButton = document.getElementById('generateBarcode');
         const id = <?php echo json_encode($id); ?>;
         const performanceCode = "<?php echo $performanceCode; ?>";
-
+        const eventTableName = "<?php echo $tableNameEvent; ?>";
         generateBarcodeButton.addEventListener('click', async function () {
 
             //alert('I am clicked');
+            console.log('Generate Barcode button is clicked');
             const valueRows = document.querySelectorAll('.value-rows');
 
             for (let i = 0; i < valueRows.length; i++) {
@@ -141,6 +142,7 @@ if ($id === '') {
                     "pricetypecode": rowData[9].innerText
                 };
                 const customerData = {
+                    "eventsairid": rowData[0].innerText,
                     "salutation": rowData[1].innerText,
                     "firstname": rowData[2].innerText,
                     "lastname": rowData[3].innerText,
@@ -156,7 +158,7 @@ if ($id === '') {
                     headers: {
                         'Content-Type': 'application/json',
                     },
-                    body: JSON.stringify({ performance_code: performanceCode, basketData, customerData }),
+                    body: JSON.stringify({ eventTableName: eventTableName, performance_code: performanceCode, basketData, customerData }),
                 });
 
 
@@ -226,7 +228,7 @@ if ($id === '') {
                 },
                 body: JSON.stringify({ id: id, tableData, eventName: eventName }),
             });
-
+            
             if (uploadResponse.ok) {
                 uploadedDetails = await uploadResponse.json();
                 const tableName = uploadedDetails.tableName;
