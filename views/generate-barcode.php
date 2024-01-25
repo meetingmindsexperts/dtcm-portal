@@ -3,8 +3,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include_once '../includes/db.php';
 // Include the curl-requests.php file//
-// include_once '../includes/curl-requests.php'; 
-include_once '../includes/curl-requests-prod.php';
+include_once '../includes/curl-requests.php'; 
+// include_once '../includes/curl-requests-prod.php';
 
 
 // Initialize an array to store messages and errors
@@ -96,14 +96,6 @@ if ($id === '') {
                 if ($conn->query($tableCreationQuery) === TRUE) {
                     $messages[] = "New Table created.";
 
-                    // Update existing row in your tracking table (events_csv)
-                    $updateSql = "UPDATE events_csv SET event_table_name = '$event_table_name' WHERE id = $id";
-
-                    if ($conn->query($updateSql) === TRUE) {
-                        $messages[] = "Events_csv table updated successfully with: " . $event_table_name;
-                    } else {
-                        $errors[] = "Error updating table name in the Events_csv table: " . $conn->error;
-                    }
                     // Insert data into your table
                     $insertSql = "INSERT INTO $event_table_name (eventsairid, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
                         VALUES ('$eventsairid', '$first_name', '$last_name', '$email','$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";

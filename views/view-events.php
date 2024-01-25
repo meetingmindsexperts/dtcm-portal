@@ -4,7 +4,7 @@ include_once '../includes/functions.php';
 include_once '../includes/header.php';
 
 // Pagination settings
-$eventsPerPage = 4;
+$eventsPerPage = 5;
 $currentpage = isset($_GET['page']) ? $_GET['page'] : 1;
 
 // Get total number of events
@@ -20,6 +20,21 @@ $offset = ($currentpage - 1) * $eventsPerPage;
 $events = getEventsPaginated($offset, $eventsPerPage);
 
 ?>
+<style>
+.event_data {
+    padding: 20px;
+    border-bottom:  2px solid #dadada;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.event_data:nth-of-type(even) {
+    background: #f8f8f8;
+    
+}
+.event_data:nth-of-type(odd) {
+    background: #fff;
+}
+</style>
 
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center">
@@ -27,14 +42,23 @@ $events = getEventsPaginated($offset, $eventsPerPage);
         <a class="btn btn-success" href="<?php echo $baseUrl; ?>/views/add-event.php">Add Event</a>
     </div>
 
-    <ul class="list-group">
-        <?php foreach ($events as $event): ?>
-            <li class="list-group-item">
-                <strong><?= $event['event_name']; ?></strong> - <?= $event['date_added']; ?>
-                <p><?= $event['performance_code']; ?></p>
-            </li>
+    <div class="pt-5">
+        <?php 
+        foreach ($events as $event): 
+            $id = $event['id'];
+            ?>
+            <div class="row event_data justify-content-between">
+                <div class="col-12 col-md-8">
+                    <strong><?= $event['event_name']; ?></strong> - <?= $event['date_added']; ?>
+                    <p><?= $event['performance_code']; ?></p>
+
+                </div>
+                <div class="col-md-4 text-end">
+                    <a class='btn btn-success' href='view-event-table-data.php?id=<?php echo $id; ?>'>View Data</a>
+                </div>
+            </div>
         <?php endforeach; ?>
-    </ul>
+        </div>
 
     <!-- Pagination links -->
     <div class="mt-3">

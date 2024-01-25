@@ -121,6 +121,14 @@ if ($id === '') {
 ?>
 
 <script type="text/javascript">
+    window.onbeforeunload = function() { return "Your work will be lost."; };
+    document.addEventListener('DOMContentLoaded', function() {
+        // Your script here
+        window.onbeforeunload = function() {
+            return "Your work will be lost.";
+        };
+    });
+
     document.addEventListener('DOMContentLoaded', function () {
         const exportCsv = document.getElementById('exportCsv');
 
@@ -191,9 +199,6 @@ if ($id === '') {
                         console.error('Error:', barcodeDetails.messages);
                         // Update the UI to show the errors to the user
                         document.getElementById('errorMessage').innerText = barcodeDetails.messages.join('\n');
-                    } else {
-                        // Process the successful response and update UI as needed
-                        console.log('Success:', barcodeDetails);
                     }
 
                 } else {
