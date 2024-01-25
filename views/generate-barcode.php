@@ -96,20 +96,19 @@ if ($id === '') {
                 if ($conn->query($tableCreationQuery) === TRUE) {
                     $messages[] = "New Table created.";
 
-                    // Insert data into your tracking table (events_csv)
-                    $insertSql1 = "INSERT INTO events_csv (event_table_name) VALUES ('$event_table_name')";
+                    // Update existing row in your tracking table (events_csv)
+                    $updateSql = "UPDATE events_csv SET event_table_name = '$event_table_name' WHERE id = $id";
 
-                    if ($conn->query($insertSql1) === TRUE) {
+                    if ($conn->query($updateSql) === TRUE) {
                         $messages[] = "Events_csv table updated successfully with: " . $event_table_name;
                     } else {
-                        $errors[] = "Error inserting table name into the Events_csv table: " . $conn->error;
+                        $errors[] = "Error updating table name in the Events_csv table: " . $conn->error;
                     }
-
                     // Insert data into your table
-                    $insertSql2 = "INSERT INTO $event_table_name (eventsairid, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
+                    $insertSql = "INSERT INTO $event_table_name (eventsairid, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
                         VALUES ('$eventsairid', '$first_name', '$last_name', '$email','$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";
 
-                    if ($conn->query($insertSql2) === TRUE) {
+                    if ($conn->query($insertSql) === TRUE) {
                         $messages[] = "Data inserted into the table successfully.";
                     } else {
                         $errors[] = "Error inserting data into the table: " . $conn->error;
