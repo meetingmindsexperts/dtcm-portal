@@ -38,6 +38,7 @@ if ($eventName !== '') {
                       </div>";
 
                 // Generate HTML table
+                echo '<div class="py-5 my-4"';
                 echo '<table id="dynamicTable" class="table table-striped d-block overflow-scroll">';
                 echo '<thead>';
                 echo '<tr>';
@@ -70,6 +71,7 @@ if ($eventName !== '') {
 
                 echo '</tbody>';
                 echo '</table>';
+                echo '</div>';
 
                 // Add pagination controls
                 echo '<div class="d-flex align-items-center justify-content-between"><div id="pagination" class="pagination"></div>';
