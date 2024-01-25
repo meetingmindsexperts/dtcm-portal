@@ -110,7 +110,7 @@ $_SESSION['successMessage'] = $successMessage;
         $offset = ($page - 1) * $itemsPerPage;
 
         // Fetch data with pagination
-        $result = $conn->query("SELECT * FROM events_csv LIMIT $offset, $itemsPerPage");
+        $result = $conn->query("SELECT * FROM events_csv ORDER BY date_modified DESC LIMIT $offset, $itemsPerPage");
 
         // Display the table
         ?>

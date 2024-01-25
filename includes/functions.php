@@ -50,7 +50,7 @@ function addEvent($eventid, $ddi_api, $register_link, $performance_code, $event_
 function getEventsPaginated($offset, $limit) {
     global $conn;
 
-    $sql = "SELECT * FROM events_csv LIMIT $offset, $limit";
+    $sql = "SELECT * FROM events_csv ORDER BY date_modified DESC LIMIT $offset, $limit";
     $result = $conn->query($sql);
 
     $events = [];
