@@ -164,7 +164,7 @@ if ($eventName !== '') {
 
             for (let i = 1; i <= totalPages; i++) {
                 const pageButton = document.createElement('button');
-                pageButton.classList.add('btn');
+                pageButton.classList.add('btn', 'btn-outline-primary', 'm-1');
                 pageButton.textContent = i;
                 pageButton.addEventListener('click', () => {
                     currentPage = i;

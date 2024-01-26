@@ -163,7 +163,7 @@ $_SESSION['successMessage'] = $successMessage;
 
                 // Display pagination links
                 for ($i = 1; $i <= $totalPages; $i++) {
-                    echo "<a class='btn' href='?page=$i'>$i</a>";
+                    echo "<a class='btn btn-outline-primary m-1' href='?page=$i'>$i</a>";
                 }
                 $conn->close();
                 ?>
