@@ -1,5 +1,7 @@
-<footer>
-
+<footer class="py-4">
+    <div>
+        <p>© <?php echo date("Y"); ?> Meeting  Minds Experts. All Rights reserved.</p>
+    </div>
 
 </footer>
 
