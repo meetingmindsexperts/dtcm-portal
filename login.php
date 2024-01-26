@@ -54,7 +54,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <div class="conatiner py-5 mt-5"> 
     <div class="row">
         <div class="col-md-6 offset-md-3">
-            <h2>Login</h2>
             <?php foreach ($errors as $error) { ?>
                 <div class="alert alert-danger" role="alert"><?php echo $error; ?></div>
             <?php } ?>
@@ -63,7 +62,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <?php
                 unset($message);
             } ?>
-
+            <div class="text-start">
+                <img src="https://meetingmindsexperts.com/wp-content/uploads/2018/11/MME-WEB-LOGO-12-11-18.png" alt="logo" style="width: 185px;">
+                <h4 class="mt-1 mb-5 pb-1">Meeting Minds Experts</h4>
+            </div>
+            <h2>Login</h2>
             <form action="login.php" method="post">
                 <div class="mb-3">
                     <label for="username" class="form-label">Username</label>
