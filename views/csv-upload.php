@@ -101,7 +101,7 @@ $_SESSION['successMessage'] = $successMessage;
 
     <?php
         // Set the number of items to display per page
-        $itemsPerPage = 4;
+        $itemsPerPage = 5;
 
         // Get the current page number from the URL, default to 1 if not set
         $page = isset($_GET['page']) ? intval($_GET['page']) : 1;

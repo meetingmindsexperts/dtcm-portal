@@ -41,7 +41,7 @@ $events = getEventsPaginated($offset, $eventsPerPage);
 <div class="container mt-5">
     <div class="d-flex justify-content-between align-items-center">
         <h2>Events</h2>
-        <a class="btn btn-success" href="<?php echo $baseUrl; ?>/views/add-event.php">Add Event</a>
+        <a class="btn btn-primary" href="<?php echo $baseUrl; ?>/views/add-event.php">Add Event</a>
     </div>
 
     <div class="pt-5">
