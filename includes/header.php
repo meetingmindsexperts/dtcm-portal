@@ -3,6 +3,11 @@ include_once "db.php";
 include_once "functions.php";
 //include_once 'auth.php';
 
+if (!isset($_SESSION['username'])) {
+    $display = "d-none";
+} else {
+    $display = "d-flex";
+}
 ?>
 
 
@@ -28,8 +33,8 @@ include_once "functions.php";
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon"></span>
         </button>
-        <div class="collapse navbar-collapse justify-content-between" id="navbarNav">
-            <ul class="navbar-nav ml-auto">
+        <div class="collapse navbar-collapse justify-content-between " id="navbarNav">
+            <ul class="navbar-nav ml-auto <?php echo $display; ?>">
                 <li class="nav-item">
                     <a class="nav-link" href="<?php echo $baseUrl; ?>/views/view-events.php">Events</a>
                 </li>
@@ -38,7 +43,7 @@ include_once "functions.php";
                 </li>
                 
             </ul>
-            <div class="nav-item logout_btn">
+            <div class="nav-item logout_btn <?php echo $display; ?>">
                 <a class="btn btn-primary nav-divnk" href="<?php echo $baseUrl; ?>/logout.php">Logout</a>
             </div>
         </div>
