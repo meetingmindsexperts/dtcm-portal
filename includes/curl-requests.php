@@ -1,6 +1,14 @@
 <?php
 
+// $baseURL = 'https://et-apiuat.detsandbox.com';
+// $sellerCode = 'AMMEE1';
+// $apiKey ='3rcbhsn32xmwvu42bmk2pkak';
+// $client_secret =  "bbWbFT-5HIaOaaX24otu2JC0S8SpuNNCqhDmv8jC";
+
 $apiUrl = "https://et-apiuat.detsandbox.com/adfs/oauth2/token?api_key=8555cns4y3hruga8kbtvaubx";
+$performance_code = "PDUB01DEC2023B";
+$pricetypecode = "A";
+$area = "SVIP1";
 
 function makeApiRequest($url, $method, $accessToken, $data = null) {
     $curl = curl_init();
@@ -62,9 +70,6 @@ function getAccessToken() {
     }
 }
 
-$performance_code = "PDUB01DEC2023B";
-$pricetypecode = "A";
-$area = "SVIP1";
 function createBasket($accessToken, $performance_code, $area, $pricetypecode) {
     $url = 'https://et-apiuat.detsandbox.com/baskets?api_key=3rcbhsn32xmwvu42bmk2pkak';
 
