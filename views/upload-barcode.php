@@ -44,16 +44,6 @@ try {
             } else {
                 $errors[] = "Error updating table name in the Events_csv table: " . $conn->error;
             }
-            $insertTableQuery = "INSERT INTO $newTableName (id, table_data, date_added) VALUES ($id, '$tableData', NOW());";
-            
-           
-            //echo $insertTableQuery;  // Add this line for debugging
-    
-            if ($conn->query($insertTableQuery) === TRUE) {
-                $messages[] = "Data updated successfully!";
-            } else {
-                $errors[] = "Database error: " . $conn->error;
-            }
         } else {
             $errors[] = "Table creation error: " . $conn->error;
         }
