@@ -3,8 +3,8 @@ error_reporting(E_ALL);
 ini_set('display_errors', 1);
 include_once '../includes/db.php';
 // Include the curl-requests.php file//
-include_once '../includes/curl-requests.php'; 
-// include_once '../includes/curl-requests-prod.php';
+// include_once '../includes/curl-requests.php'; 
+include_once '../includes/curl-requests-prod.php';
 
 
 // Initialize an array to store messages and errors

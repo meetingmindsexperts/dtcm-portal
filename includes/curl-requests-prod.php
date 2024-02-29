@@ -65,7 +65,7 @@ function getAccessToken() {
     }
 }
 
-$performance_code = "PVEN26JAN2024T";
+$performance_code = "PVEN01MAR2024H";
 $pricetypecode = "B";
 $area = "SFACULTY";
 function createBasket($accessToken, $performance_code, $area, $pricetypecode) {

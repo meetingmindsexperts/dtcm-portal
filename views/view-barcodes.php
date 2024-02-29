@@ -1,6 +1,5 @@
 <?php
 include_once '../includes/auth.php';
-
 include_once '../includes/db.php';
 include_once '../includes/header.php';
 
@@ -8,84 +7,64 @@ include_once '../includes/header.php';
 $eventName = isset($_GET['eventName']) ? mysqli_real_escape_string($conn, $_GET['eventName']) : '';
 
 // Fetch data from the specified table
-
 $errors = [];
 $data = [];
+
 if ($eventName !== '') {
-    $sql = "SELECT table_data FROM $eventName";
+    $sql = "SELECT * FROM $eventName";
     $result = $conn->query($sql);
 
     if ($result->num_rows > 0) {
+        // Fetch associative array
         while ($row = $result->fetch_assoc()) {
             $data[] = $row;
         }
 
         // Check if there is any data
         if (!empty($data)) {
-            // Decode the JSON string in the 'tableData' field
-            $tableData = json_decode($data[0]['table_data'], true);
+            echo "<div>
+                    <button class='btn btn-success' type='button' id='exportCsv'>Export as CSV</button>
+                  </div>";
 
-            // Check if decoding was successful
-            if (empty($tableData)) {
-                echo "No data available for the specified table.";
-                $errors[] = "No data available for the specified table.";
-            } else {
-                echo "<div>
-                        <button class='btn btn-success' type='button' id='exportCsv'>Export as CSV</button>
-                      </div>";
-
-                // Generate HTML table
-                echo '<table id="dynamicTable" class="table table-striped">';
-                echo '<thead>';
-                echo '<tr>';
-                echo '<th>#</th>';
-                echo '<th>ID</th>';
-                echo '<th>Title</th>';
-                echo '<th>First Name</th>';
-                echo '<th>Last Name</th>';
-                echo '<th>Country</th>';
-                echo '<th>Email</th>';
-                echo '<th>Phone</th>';
-                echo '<th>Country Code</th>';
-                echo '<th>Registration Type</th>';
-                echo '<th>Price Type</th>';
-                echo '<th>Order ID</th>';
-                echo '<th>Barcode</th>';
-                echo '<th>Basket ID</th>';
-                echo '<th>Customer ID</th>';
-                echo '</tr>';
-                echo '</thead>';
-                echo '<tbody>';
-
-                foreach ($tableData as $index => $row) {
-                    echo '<tr>';
-                    foreach ($row as $value) {
-                        echo '<td>' . $value . '</td>';
-                    }
-                    echo '</tr>';
-                }
-
-                echo '</tbody>';
-                echo '</table>';
+            // Generate HTML table
+            echo '<table id="dynamicTable" class="table table-striped">';
+            echo '<thead>';
+            echo '<tr>';
+            echo '<th>#</th>';
+            foreach ($data[0] as $key => $value) {
+                echo '<th>' . htmlspecialchars($key) . '</th>';
             }
+            echo '</tr>';
+            echo '</thead>';
+            echo '<tbody>';
+
+            foreach ($data as $index => $row) {
+                echo '<tr>';
+                echo '<td>' . ($index + 1) . '</td>';
+                foreach ($row as $value) {
+                    echo '<td>' . htmlspecialchars($value) . '</td>';
+                }
+                echo '</tr>';
+            }
+
+            echo '</tbody>';
+            echo '</table>';
         } else {
             echo "No data available for the specified table.";
             $errors[] = "No data available for the specified table.";
         }
     }
-    foreach ($errors as $error) {
-        echo '<div class="text-danger">';
-        echo $error;
-        echo '</div>';
-    }
+}
 
+foreach ($errors as $error) {
+    echo '<div class="text-danger">';
+    echo $error;
+    echo '</div>';
 }
 ?>
 
 <script>
-
 document.addEventListener('DOMContentLoaded', function () {
-
     // Declare exportCsv before using it in event listeners
     const exportCsv = document.getElementById('exportCsv');
 
