@@ -173,7 +173,7 @@ if ($id === '') {
 
                 if (response.ok) {
                     barcodeDetails = await response.json();
-                    console.log(barcodeDetails);
+                    //console.log("barcodeDetails json repsone:", barcodeDetails);
 
                     // Update the corresponding cells in the table with the generated barcode details
                     rowData[10].innerText = barcodeDetails.orderId;
