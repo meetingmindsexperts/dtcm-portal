@@ -1,9 +1,10 @@
 <?php
-$baseURL = 'https://et-api.det.gov.ae/';
-$sellerCode = 'AMMEE1';
-$apiKey ='sz4pbntphrygvseq2dr98vh8';
-$client_secret =  "57gZ_cbatt9P2hcUmZC9vQCi9vtBUCf0enK8Z_8Z";
-$apiUrl = "https://et-api.det.gov.ae/adfs/oauth2/token?api_key=sz4pbntphrygvseq2dr98vh8";
+
+// $baseURL = 'https://et-api.det.gov.ae/';
+// $sellerCode = 'AMMEE1';
+// $apiKey ='sz4pbntphrygvseq2dr98vh8';
+// $client_secret =  "57gZ_cbatt9P2hcUmZC9vQCi9vtBUCf0enK8Z_8Z";
+// $apiUrl = "https://et-api.det.gov.ae/adfs/oauth2/token?api_key=sz4pbntphrygvseq2dr98vh8";
 
 // Initialize an array to store messages and errors
 $messages = [];
@@ -54,6 +55,8 @@ if ($id === '') {
         $event_table_name = $data->eventTableName;
         // Obtain or pass the access token to the function
 
+        $apiUrl = "https://et-api.det.gov.ae/adfs/oauth2/token?api_key=sz4pbntphrygvseq2dr98vh8";
+
         function makeApiRequest($url, $method, $accessToken, $data = null) {
             $curl = curl_init();
 
@@ -75,10 +78,7 @@ if ($id === '') {
             $response = curl_exec($curl);
 
             if ($response === false) {
-                echo "cURL Error: " . curl_error($curl);
-                echo "cURL Error Code: " . curl_errno($curl);
-                curl_close($curl);
-                return null;
+                throw new Exception("cURL Error: " . curl_error($curl));
             }
 
             curl_close($curl);
@@ -86,8 +86,7 @@ if ($id === '') {
             $decodedResponse = json_decode($response, true);
 
             if ($decodedResponse === null) {
-                echo "Failed to decode JSON response. Response: " . $response;
-                return null;
+                throw new Exception("Failed to decode JSON response. Response: " . $response);
             }
 
             return $decodedResponse;
@@ -109,8 +108,7 @@ if ($id === '') {
             if (isset($response['access_token'])) {
                 return $response['access_token'];
             } else {
-                echo "Access token retrieval failed. Response: " . json_encode($response);
-                return null;
+                throw new Exception("Access token retrieval failed. Response: " . json_encode($response));
             }
         }
 
@@ -139,120 +137,133 @@ if ($id === '') {
 
             $response = makeApiRequest($url, 'POST', $accessToken, $data);
 
-            if (!$response) {
-                return null;
-            }
-
             if (!isset($response['id'])) {
-                echo "Invalid response from createBasket function. Response: " . json_encode($response);
-                return null;
+                throw new Exception("Invalid response from createBasket function. Response: " . json_encode($response));
             }
 
             return $response['id'];
         }
 
-        $customerData = [
-            "firstname" => $first_name,
-            "lastname" => $last_name,
-            "nationality" => $nationality,
-            "email" => $email,
-            "phoneNumber" => $phonenumber,
-            "countryCode" => $countrycode,
-        ];
-        function createCustomer($accessToken, $customerData) {
-            $url = 'https://et-api.det.gov.ae/customers?api_key=sz4pbntphrygvseq2dr98vh8';
+        // Add similar error handling and logging for other API functions (createCustomer, purchaseBasket, getOrderDetails)
 
-            $response = makeApiRequest($url, 'POST', $accessToken, $customerData);
+        try {
+            $accessToken = getAccessToken();
+            $basketId = createBasket($accessToken, $performance_code, $area, $pricetypecode);
 
-            if (!$response) {
-                echo "No response from createCustomer function.";
-                return null;
+            // Handle successful basket creation
+            if ($basketId) {
+                // Proceed with other API functions (createCustomer, purchaseBasket, getOrderDetails)
+                $customerData = [
+                    "firstname" => $first_name,
+                    "lastname" => $last_name,
+                    "nationality" => $nationality,
+                    "email" => $email,
+                    "phoneNumber" => $phonenumber,
+                    "countryCode" => $countrycode,
+                ];
+                
+                function createCustomer($accessToken, $customerData) {
+                    $url = 'https://et-api.det.gov.ae/customers?api_key=sz4pbntphrygvseq2dr98vh8';
+                
+                    $response = makeApiRequest($url, 'POST', $accessToken, $customerData);
+                
+                    if (!$response) {
+                        throw new Exception("No response from createCustomer function.");
+                    }
+                
+                    // Check if the expected indices are present in the response
+                    if (!isset($response['id']) || !isset($response['account']) || !isset($response['aFile'])) {
+                        throw new Exception("Invalid response from createCustomer function. Response: " . json_encode($response));
+                    }
+                
+                    return [
+                        'customerId' => $response['id'],
+                        'account' => $response['account'],
+                        'aFile' => $response['aFile'],
+                    ];
+                }
+                
+                function purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile) {
+                    $url = 'https://et-api.det.gov.ae/baskets/' . $basketId . '/purchase?api_key=sz4pbntphrygvseq2dr98vh8';
+                
+                    $data = [
+                        "Seller" => "AMMEE1",
+                        "customer" => [
+                            "ID" => $customerId,
+                            "Account" => $customerAccount,
+                            "AFile" => $aFile,
+                        ],
+                        "Payments" => [
+                            [
+                                "Amount" => "0",  // Update this based on the basket id
+                                "MeansOfPayment" => "EXTERNAL",
+                            ],
+                        ],
+                    ];
+                
+                    $response = makeApiRequest($url, 'POST', $accessToken, $data);
+                
+                    if (!$response) {
+                        throw new Exception("No response from purchaseBasket function.");
+                    }
+                
+                    if (!isset($response['orderId'])) {
+                        throw new Exception("Invalid response from purchaseBasket function. Response: " . json_encode($response));
+                    }
+                
+                    return $response['orderId'];
+                }
+                
+                function getOrderDetails($accessToken, $orderId) {
+                    $url = 'https://et-api.det.gov.ae/orders/' . $orderId . '?api_key=sz4pbntphrygvseq2dr98vh8';
+                
+                    return makeApiRequest($url, 'GET', $accessToken);
+                }
+                
+                // Collect all errors in this array
+                $errors = [];
+                
+                $accessToken = getAccessToken();
+                if (!$accessToken) {
+                    $errors[] = "Failed to retrieve access token. </br> ". "\n";
+                }
+                
+                $basketId = createBasket($accessToken, $performance_code, $area, $pricetypecode);
+                if (!$basketId) {
+                    $errors[] = "Failed to create basket."."\n";
+                }
+                
+                $customerDetails = createCustomer($accessToken, $customerData);
+                if (!$customerDetails) {
+                    $errors[] = "Failed to create customer."."\n";
+                } 
+                // Extracting relevant details from $customerDetails
+                $customerId = $customerDetails['customerId'];
+                $customerAccount = $customerDetails['account'];
+                $aFile = $customerDetails['aFile'];
+                
+                $orderId = purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile);
+                if (!$orderId) {
+                    $errors[] = "Failed to purchase basket."."\n";
+                } else {
+                    $barcodeDetails = getOrderDetails($accessToken, $orderId);
+                    if (!$barcodeDetails) {
+                        $errors[] = "Failed to retrieve order details.";
+                    }
+                } 
+                
+            } else {
+                throw new Exception("Failed to create basket.");
             }
-
-            // Check if the expected indices are present in the response
-            if (!isset($response['id']) || !isset($response['account']) || !isset($response['aFile'])) {
-                echo "Invalid response from createCustomer function. Response: " . json_encode($response);
-                return null;
-            }
-
-            return [
-                'customerId' => $response['id'],
-                'account' => $response['account'],
-                'aFile' => $response['aFile'],
-            ];
+        } catch (Exception $e) {
+            $errors[] = $e->getMessage();
         }
-
-        function purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile) {
-            $url = 'https://et-api.det.gov.ae/baskets/' . $basketId . '/purchase?api_key=sz4pbntphrygvseq2dr98vh8';
-
-            $data = [
-                "Seller" => "AMMEE1",
-                "customer" => [
-                    "ID" => $customerId,
-                    "Account" => $customerAccount,
-                    "AFile" => $aFile,
-                ],
-                "Payments" => [
-                    [
-                        "Amount" => "0",  //update this based on the basket id
-                        "MeansOfPayment" => "EXTERNAL",
-                    ],
-                ],
-            ];
-
-            $response = makeApiRequest($url, 'POST', $accessToken, $data);
-
-            if (!$response) {
-                return null;
-            }
-
-            if (!isset($response['orderId'])) {
-                echo "Invalid response from purchaseBasket function. Response: " . json_encode($response);
-                return null;
-            }
-
-            return $response['orderId'];
-        }
-
-        function getOrderDetails($accessToken, $orderId) {
-            $url = 'https://et-api.det.gov.ae/orders/' . $orderId . '?api_key=sz4pbntphrygvseq2dr98vh8';
-
-            return makeApiRequest($url, 'GET', $accessToken);
-        }
-
-        // Collect all errors in this array
-        $errors = [];
-
-        $accessToken = getAccessToken();
-        if (!$accessToken) {
-            $errors[] = "Failed to retrieve access token. </br> ". "\n";
-        }
-
-        $basketId = createBasket($accessToken, $performance_code, $area, $pricetypecode);
-        if (!$basketId) {
-            $errors[] = "Failed to create basket."."\n";
-        }
-
-        $customerDetails = createCustomer($accessToken, $customerData);
-        if (!$customerDetails) {
-            $errors[] = "Failed to create customer."."\n";
-        } 
-        // Extracting relevant details from $customerDetails
-        $customerId = $customerDetails['customerId'];
-        $customerAccount = $customerDetails['account'];
-        $aFile = $customerDetails['aFile'];
-
-        $orderId = purchaseBasket($accessToken, $basketId, $customerId, $customerAccount, $aFile);
-        if (!$orderId) {
-            $errors[] = "Failed to purchase basket."."\n";
-        } else {
-            $barcodeDetails = getOrderDetails($accessToken, $orderId);
-            if (!$barcodeDetails) {
-                $errors[] = "Failed to retrieve order details.";
-            }
-        }   
-
     }
+}
+
+// Output errors as JSON
+if (!empty($errors)) {
+    echo json_encode(['errors' => $errors]);
 }
 
 // $accessToken = getAccessToken();

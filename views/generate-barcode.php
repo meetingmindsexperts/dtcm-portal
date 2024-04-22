@@ -15,47 +15,36 @@ include_once '../includes/curl-requests-prod.php';
     $result = $conn->query($checkTableQuery);
 
     if ($result->num_rows == 0) {
-    // Table doesn't exist, create it
-    $tableCreationQuery = "CREATE TABLE $event_table_name (
-        id INT PRIMARY KEY AUTO_INCREMENT,
-        eventsairid BIGINT,
-        first_name VARCHAR(255),
-        last_name VARCHAR(255),
-        email VARCHAR(255),
-        event_name VARCHAR(255),
-        basketId VARCHAR(255),
-        customerId VARCHAR(255),
-        orderId VARCHAR(255),
-        barcode VARCHAR(255),
-        date_added DATETIME DEFAULT CURRENT_TIMESTAMP
-    )";
+        // Table doesn't exist, create it
+        $tableCreationQuery = "CREATE TABLE $event_table_name (
+            id INT PRIMARY KEY AUTO_INCREMENT,
+            eventsair_id BIGINT,
+            first_name VARCHAR(255),
+            last_name VARCHAR(255),
+            email VARCHAR(255),
+            event_name VARCHAR(255),
+            basketId VARCHAR(255),
+            customerId VARCHAR(255),
+            orderId VARCHAR(255),
+            barcode VARCHAR(255),
+            date_added DATETIME DEFAULT CURRENT_TIMESTAMP
+        )";
 
-    if ($conn->query($tableCreationQuery) === TRUE) {
-        $messages[] = "New Table created.";
-
-        // Insert data into your table
-        $insertSql = "INSERT INTO $event_table_name (eventsairid, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
-            VALUES ('$eventsairid', '$first_name', '$last_name', '$email','$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";
-
-        if ($conn->query($insertSql) === TRUE) {
-            $messages[] = "Data inserted into the table successfully.";
+        if ($conn->query($tableCreationQuery) === TRUE) {
+            $messages[] = "New Table created.";
         } else {
-            $errors[] = "Error inserting data into the table: " . $conn->error;
+            $errors[] = "Table creation error: " . $conn->error;
         }
-    } else {
-        $errors[] = "Table creation error: " . $conn->error;
     }
-    } else {
-        // Table already exists, assume subsequent rows will have the same structure
-        // Insert data into your table
-        $insertSql = "INSERT INTO $event_table_name (eventsairid, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
-            VALUES ('$eventsairid', '$first_name', '$last_name', '$email','$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";
 
-        if ($conn->query($insertSql) === TRUE) {
-            $messages[] = "Data inserted into the table successfully.";
-        } else {
-            $errors[] = "Error inserting data into the table: " . $conn->error;
-        }
+    // Insert data into your table
+    $insertSql = "INSERT INTO $event_table_name (eventsair_id, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
+        VALUES ('$eventsairid', '$first_name', '$last_name', '$email','$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";
+
+    if ($conn->query($insertSql) === TRUE) {
+        $messages[] = "Data inserted into the table successfully.";
+    } else {
+        $errors[] = "Error inserting data into the table: " . $conn->error;
     }
 
 // Output the details as JSON
