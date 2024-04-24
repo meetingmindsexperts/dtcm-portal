@@ -18,24 +18,24 @@ $id = (isset($data['id']) || isset($_GET['id'])) ? $data['id'] : $_GET['id'];
 $tableData = isset($data['tableData']) ? json_encode($data['tableData']) : '';
 $eventName = $data['eventName'];
 $tableName = strtolower(str_replace(' ', '', $eventName));
-$newTableName = strtolower(str_replace(' ', '', $eventName)).uniqid();
+$newTableName = strtolower(str_replace(' ', '', $eventName)) . uniqid();
 
 // Perform database operations
 try {
     // Check if required data is present
     if ($id > 0 && $tableData !== '' && $eventName !== '') {
         // Create the table if it doesn't exist
-        $tableCreationQuery = "CREATE TABLE IF NOT EXISTS $newTableName (
+        $tableCreationQuery = "CREATE TABLE IF NOT EXISTS `$newTableName`(
             id INT PRIMARY KEY,
             table_data TEXT,
             date_added DATETIME
         );";
-    
+
         //echo $tableCreationQuery;  // Add this line for debugging
-    
+
         if ($conn->query($tableCreationQuery) === TRUE) {
             $messages[] = "Table created or already exists.";
-    
+
             // Example: Insert data into a table
             $updateSql = "UPDATE events_csv SET event_table_name = '$tableName', event_table_data = '$tableData' WHERE id = $id";
 
@@ -52,8 +52,7 @@ try {
     }
 } catch (Exception $e) {
     $errors[] = "Error message: " . $e->getMessage();
-} 
-finally {
+} finally {
     // Close the database connection
     $conn->close();
 }
