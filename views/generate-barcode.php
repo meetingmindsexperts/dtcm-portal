@@ -16,7 +16,7 @@ include_once '../includes/curl-requests-prod.php';
 
     if ($result->num_rows == 0) {
         // Table doesn't exist, create it
-        $tableCreationQuery = "CREATE TABLE $event_table_name (
+        $tableCreationQuery = "CREATE TABLE  `$event_table_name` (
             id INT PRIMARY KEY AUTO_INCREMENT,
             eventsair_id BIGINT,
             first_name VARCHAR(255),
@@ -37,15 +37,15 @@ include_once '../includes/curl-requests-prod.php';
         }
     }
 
-    // Insert data into your table
-    $insertSql = "INSERT INTO $event_table_name (eventsair_id, first_name, last_name, email, event_name, basketId, customerId, orderId, barcode, date_added) 
-        VALUES ('$eventsairid', '$first_name', '$last_name', '$email','$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";
+// Insert data into your table
+$insertSql = "INSERT INTO `$event_table_name` (`eventsair_id`, `first_name`, `last_name`, `email`, `event_name`, `basketId`, `customerId`, `orderId`, `barcode`, `date_added`) 
+    VALUES ('$eventsairid', '$first_name', '$last_name', '$email', '$event_table_name', '$basketId', '$customerId', '$orderId', '$barcode', NOW())";
 
-    if ($conn->query($insertSql) === TRUE) {
-        $messages[] = "Data inserted into the table successfully.";
-    } else {
-        $errors[] = "Error inserting data into the table: " . $conn->error;
-    }
+if ($conn->query($insertSql) === TRUE) {
+    $messages[] = "Data inserted into the table successfully.";
+} else {
+    $errors[] = "Error inserting data into the table: " . $conn->error;
+}
 
 // Output the details as JSON
 echo json_encode([

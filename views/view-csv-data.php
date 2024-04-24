@@ -132,20 +132,29 @@ if ($id === '') {
 
     document.addEventListener('DOMContentLoaded', function () {
         const exportCsv = document.getElementById('exportCsv');
-
         const uploadDataButton = document.getElementById('uploadBarcode');
         const generateBarcodeButton = document.getElementById('generateBarcode');
+        const errorMessage = document.getElementById('errorMessage');
+        
+        // Check if all required elements exist
+        if (!exportCsv || !uploadDataButton || !generateBarcodeButton || !errorMessage) {
+            console.error('Required elements not found in the DOM.');
+            return; // Exit the function if required elements are missing
+        }
         const id = <?php echo json_encode($id); ?>;
         const performanceCode = "<?php echo $performanceCode; ?>";
         const eventTableName = "<?php echo $tableNameEvent; ?>";
         generateBarcodeButton.addEventListener('click', async function () {
 
-            //alert('I am clicked');
-            console.log('Generate Barcode button is clicked');
-            const valueRows = document.querySelectorAll('.value-rows');
+        //alert('I am clicked');
+        console.log('Generate Barcode button is clicked');
+        const valueRows = document.querySelectorAll('.value-rows');
 
-            for (let i = 0; i < valueRows.length; i++) {
-                const rowData = valueRows[i].querySelectorAll('.cols');
+        for (let i = 0; i < valueRows.length; i++) {
+            const rowData = valueRows[i].querySelectorAll('.cols');
+            
+            // Check if rowData exists and has the expected length
+            if (rowData && rowData.length >= 14) {
                 const basketData = {
                     "area": rowData[8].innerText,
                     "pricetypecode": rowData[9].innerText
@@ -162,54 +171,55 @@ if ($id === '') {
                 };
 
                 // Make an asynchronous request to generate the barcode
-                const response = await fetch('generate-barcode.php?id=' +id, {
+                const response = await fetch('generate-barcode.php?id=' + id, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({ eventTableName: eventTableName, performance_code: performanceCode, basketData, customerData }),
-                });
+                    });
+                    if (response.ok) {
+                        barcodeDetails = await response.json();
+                        //console.log("barcodeDetails json repsone:", barcodeDetails);
 
+                        // Update the corresponding cells in the table with the generated barcode details
+                        rowData[10].innerText = barcodeDetails.orderId;
+                        rowData[11].innerText = barcodeDetails.barcode;
+                        rowData[12].innerText = barcodeDetails.basketId;
+                        rowData[13].innerText = barcodeDetails.customerId;
 
-                if (response.ok) {
-                    barcodeDetails = await response.json();
-                    //console.log("barcodeDetails json repsone:", barcodeDetails);
+                        // Display the "Upload Data" button
+                        uploadDataButton.classList.remove('d-none');
+                        exportCsv.classList.remove('d-none');
+                        // Check if there are any errors in the response
+                        if (barcodeDetails.errors) {
+                            // Handle and display errors on the page
+                            console.error('Error:', barcodeDetails.errors);
+                            // Update the UI to show the errors to the user
+                            document.getElementById('errorMessage').innerText = barcodeDetails.errors.join('\n');
+                        } else {
+                            // Process the successful response and update UI as needed
+                            console.log('Success:', barcodeDetails);
+                        }
+                        // Check if there are any errors in the response
+                        if (barcodeDetails.messages) {
+                            // Handle and display errors on the page
+                            console.error('Error:', barcodeDetails.messages);
+                            // Update the UI to show the errors to the user
+                            document.getElementById('errorMessage').innerText = barcodeDetails.messages.join('\n');
+                        }
 
-                    // Update the corresponding cells in the table with the generated barcode details
-                    rowData[10].innerText = barcodeDetails.orderId;
-                    rowData[11].innerText = barcodeDetails.barcode;
-                    rowData[12].innerText = barcodeDetails.basketId;
-                    rowData[13].innerText = barcodeDetails.customerId;
-
-                    // Display the "Upload Data" button
-                    uploadDataButton.classList.remove('d-none');
-                    exportCsv.classList.remove('d-none');
-                    // Check if there are any errors in the response
-                    if (barcodeDetails.errors) {
-                        // Handle and display errors on the page
-                        console.error('Error:', barcodeDetails.errors);
-                        // Update the UI to show the errors to the user
-                        document.getElementById('errorMessage').innerText = barcodeDetails.errors.join('\n');
                     } else {
-                        // Process the successful response and update UI as needed
-                        console.log('Success:', barcodeDetails);
-                    }
-                    // Check if there are any errors in the response
-                    if (barcodeDetails.messages) {
-                        // Handle and display errors on the page
-                        console.error('Error:', barcodeDetails.messages);
-                        // Update the UI to show the errors to the user
-                        document.getElementById('errorMessage').innerText = barcodeDetails.messages.join('\n');
-                    }
+                        // Hide the "Upload Data" button in case of an error
+                        uploadDataButton.classList.add('d-none');
+                        exportCsv.classList.add('d-none');
 
+                        console.error('Error:', response.status, response.statusText);
+                        const errorText = await response.text();
+                        console.error('Error Response:', errorText);
+                    }
                 } else {
-                    // Hide the "Upload Data" button in case of an error
-                    uploadDataButton.classList.add('d-none');
-                    exportCsv.classList.add('d-none');
-
-                    console.error('Error:', response.status, response.statusText);
-                    const errorText = await response.text();
-                    console.error('Error Response:', errorText);
+                    console.error('Error: rowData is undefined or does not have expected length');
                 }
             }
         });
