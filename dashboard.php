@@ -4,7 +4,7 @@ include_once 'includes/auth.php';
 include_once 'includes/header.php';
 ?>
 
-<div class="row">
+<div class="row py-2">
     <div class="col-md-12">
         <h2 class="mb-4">Welcome <?php echo ucwords($_SESSION['username']); ?>!</h2>
         <p>Go to Events page</p>
