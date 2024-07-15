@@ -19,5 +19,4 @@ jobs:
         server: ftp.meetingminds-experts.com
         username: krishna@dtcm-csv.meetingminds-experts.com
         password: ${{ secrets.ftp_password }}
-        server-dir: public_html/dtcm-csv.meetingminds-experts.com/
         log-level: standard
